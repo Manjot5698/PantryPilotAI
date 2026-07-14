@@ -1,11 +1,10 @@
-````markdown
 # 🍳 PantryPilot AI
 
 > **Expiry-Aware Recipe Recommendation System using Retrieval-Augmented Generation (RAG)**
 
-PantryPilot AI is a Retrieval-Augmented Generation (RAG) application that intelligently recommends recipes based on the ingredients available in a user's pantry. Unlike traditional recipe recommendation systems, PantryPilot also considers ingredient expiry dates to prioritize recipes that help reduce food waste.
+PantryPilot AI is an AI-powered recipe recommendation system that uses **Retrieval-Augmented Generation (RAG)** to suggest recipes based on the ingredients available in a user's pantry. It also considers ingredient expiry dates to prioritize recipes that help reduce food waste.
 
-The system combines **semantic search**, **vector databases**, and a **locally hosted Large Language Model (LLM)** to deliver contextual, explainable recipe recommendations.
+The application combines **semantic search**, **FAISS vector search**, and a **locally hosted Llama 3 model via Ollama** to generate contextual and explainable recipe recommendations.
 
 ---
 
@@ -14,87 +13,72 @@ The system combines **semantic search**, **vector databases**, and a **locally h
 - 🥘 AI-powered recipe recommendations
 - 📅 Expiry-aware ingredient prioritization
 - 🔍 Semantic recipe retrieval using FAISS
-- 🤖 Local LLM inference with Llama 3 via Ollama
-- 📚 Knowledge base of 13,000+ recipes
-- 💻 Interactive Streamlit web interface
+- 🤖 Local LLM inference with Llama 3 (Ollama)
+- 📚 Knowledge base containing 13,000+ recipes
+- 💻 Interactive Streamlit interface
 - 🔒 Fully local execution (No API keys required)
 
 ---
 
-# 🏛 System Architecture
+# 🏛️ System Architecture
 
 ```mermaid
 flowchart LR
 
 subgraph User
-A[Enter Ingredients]
-B[Enter Expiry Information]
+    A[Enter Ingredients]
+    B[Enter Expiry Dates]
 end
 
-subgraph Application
-C[Streamlit Interface]
+subgraph Frontend
+    C[Streamlit Web App]
 end
 
 subgraph Retrieval
-D[Sentence Transformer Embeddings]
-E[FAISS Vector Store]
-F[Top Matching Recipes]
+    D[Sentence Transformer]
+    E[FAISS Index]
+    F[Relevant Recipes]
 end
 
-subgraph Generation
-G[Llama 3<br/>Ollama]
+subgraph LLM
+    G[Llama 3]
 end
 
 subgraph Output
-H[Recipe Recommendation]
+    H[Recipe Recommendation]
 end
 
 A --> C
 B --> C
-
 C --> D
-
 D --> E
-
 E --> F
-
-B --> G
 F --> G
-
+B --> G
 G --> H
 ```
 
 ---
 
-# 🧠 Retrieval-Augmented Generation Pipeline
+# 🧠 RAG Pipeline
 
 ```mermaid
 flowchart TD
 
-A[Recipe Dataset]
---> B[Data Loader]
-
+A[Recipe Dataset] --> B[Data Loader]
 B --> C[LangChain Documents]
-
 C --> D[Sentence Transformer]
-
 D --> E[Vector Embeddings]
+E --> F[FAISS Index]
 
-E --> F[FAISS Vector Store]
+G[User Query] --> H[Retriever]
+F --> H
+H --> I[Relevant Recipes]
 
-User[User Query]
---> G[Retriever]
+J[Expiry Information] --> K[Llama 3]
+I --> K
 
-F --> G
-
-G --> H[Relevant Recipes]
-
-Expiry[Expiry Information]
---> I[Llama 3]
-
-H --> I
-
-I --> J[Natural Language Recommendation]
+K --> L[Recipe Recommendation]
 ```
 
 ---
@@ -105,23 +89,17 @@ I --> J[Natural Language Recommendation]
 sequenceDiagram
 
 actor User
-
 participant UI as Streamlit
-participant Retriever as FAISS Retriever
-participant LLM as Llama 3
+participant Retriever as FAISS
+participant LLM as Llama3
 
 User->>UI: Enter ingredients
 User->>UI: Enter expiry dates
-
-UI->>Retriever: Semantic Search
-
-Retriever-->>UI: Top Matching Recipes
-
+UI->>Retriever: Search recipes
+Retriever-->>UI: Matching recipes
 UI->>LLM: Recipes + Expiry Context
-
-LLM-->>UI: AI Recommendation
-
-UI-->>User: Display Recipe
+LLM-->>UI: Recommendation
+UI-->>User: Display results
 ```
 
 ---
@@ -129,12 +107,13 @@ UI-->>User: Display Recipe
 # 📂 Project Structure
 
 ```text
-PantryPilot/
+PantryPilotAI/
 │
 ├── app.py
 ├── README.md
 ├── requirements.txt
 ├── pyproject.toml
+├── uv.lock
 │
 ├── data/
 │   └── 13k-recipes.csv
@@ -153,31 +132,30 @@ PantryPilot/
 
 ---
 
-# 🛠 Technology Stack
+# 🛠️ Technology Stack
 
 | Category | Technology |
-|-----------|------------|
-| Programming Language | Python |
+|----------|------------|
+| Language | Python |
 | Framework | LangChain |
-| User Interface | Streamlit |
-| Vector Database | FAISS |
+| UI | Streamlit |
+| Vector Store | FAISS |
 | Embedding Model | Sentence Transformers |
-| Large Language Model | Llama 3 (Ollama) |
-| Dataset | 13K Recipes Dataset |
+| LLM | Llama 3 (Ollama) |
+| Dataset | 13K Recipes |
 
 ---
 
 # 🚀 Installation
 
-## Clone the repository
+### Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/PantryPilot.git
-
-cd PantryPilot
+git clone https://github.com/Manjot5698/PantryPilotAI.git
+cd PantryPilotAI
 ```
 
-## Create a virtual environment
+### Create a virtual environment
 
 ```bash
 uv venv
@@ -191,21 +169,23 @@ uv venv
 .venv\Scripts\activate
 ```
 
-**Linux / macOS**
+**Linux/macOS**
 
 ```bash
 source .venv/bin/activate
 ```
 
-## Install project dependencies
+### Install dependencies
 
 ```bash
 uv pip install -r requirements.txt
 ```
 
-## Install Ollama
+---
 
-Download Ollama from:
+# 🤖 Install Ollama
+
+Install Ollama from:
 
 https://ollama.com
 
@@ -217,11 +197,11 @@ ollama pull llama3
 
 ---
 
-# ▶️ Running the Application
+# ▶️ Run the Application
 
-If the vector database has not been generated yet, create the FAISS index first.
+Generate the FAISS index if it does not already exist.
 
-Launch the application:
+Then launch the Streamlit app:
 
 ```bash
 streamlit run app.py
@@ -229,78 +209,71 @@ streamlit run app.py
 
 ---
 
-# 💡 Example Usage
+# 💡 Example Input
 
-### Available Ingredients
+### Ingredients
 
 ```text
-milk, tomatoes, chicken, rice
+milk
+tomatoes
+chicken
+rice
 ```
 
-### Expiry Information
+### Expiry Days
 
 ```text
-milk:1
-tomatoes:2
-chicken:5
-rice:30
-```
-
-### User Query
-
-```text
-I want to cook dinner tonight. What should I make?
+milk : 1
+tomatoes : 2
+chicken : 5
+rice : 30
 ```
 
 ---
 
-# 🎯 Sample Recommendation
+# 🎯 Example Output
 
 ```text
 Recommended Recipe:
 Creamy Tomato Chicken Rice
 
 Reason:
-This recipe is recommended because it makes use of milk and tomatoes,
-which are closest to their expiry dates, while matching most of the
-ingredients currently available in your pantry.
+Uses ingredients closest to expiry while matching the available pantry items.
 
 Missing Ingredients:
-• Black Pepper
-• Parsley
+- Black Pepper
+- Parsley
 
-Estimated Preparation Time:
-30 Minutes
+Preparation Time:
+30 minutes
 ```
 
 ---
 
 # 🌱 Future Enhancements
 
-- Fridge image recognition
-- Receipt OCR for automatic inventory management
-- Smart shopping list generation
-- Nutrition and calorie analysis
-- Dietary preference support
-- Online recipe retrieval
-- Voice interaction
-- Multi-user pantry management
-- Agentic workflow using LangChain Agents
-- Automatic expiry notifications
+- 📷 Fridge image recognition
+- 🧾 Receipt OCR
+- 🛒 Smart shopping list generation
+- 🥗 Nutrition and calorie analysis
+- 🌍 Online recipe retrieval
+- 🎙️ Voice assistant support
+- 👨‍👩‍👧 Multi-user pantry management
+- 🤖 LangChain Agents
+- 🔔 Automatic expiry notifications
 
 ---
 
 # 📖 Motivation
 
-Food waste is a significant global issue, and one of its major contributors is unused ingredients expiring in household kitchens.
+Food waste is a major global challenge, with household kitchens contributing significantly through expired ingredients.
 
-PantryPilot AI addresses this problem by combining semantic search with Retrieval-Augmented Generation to recommend recipes that maximize ingredient utilization while minimizing food waste.
+PantryPilot AI addresses this issue by combining semantic search with Retrieval-Augmented Generation (RAG) to recommend recipes that maximize ingredient utilization while minimizing food waste.
 
-Unlike conventional recipe recommendation systems, PantryPilot introduces **expiry-aware decision making**, enabling users to prioritize ingredients that should be consumed first.
+Unlike traditional recipe recommendation systems, PantryPilot AI incorporates ingredient expiry information into the recommendation process, helping users make smarter cooking decisions.
 
 ---
 
 # 📄 License
 
 This project is intended for educational, research, and portfolio purposes.
-````
