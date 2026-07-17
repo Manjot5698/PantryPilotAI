@@ -76,10 +76,7 @@ class VectorStoreManager:
 
         return self.vector_store
 
-    def as_retriever(
-        self,
-        k: int = 5
-    ) -> VectorStoreRetriever:
+    def as_retriever(self,k: int = 5) -> VectorStoreRetriever:
         """
         Create a retriever from the vector store.
 
