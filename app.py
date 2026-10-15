@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import streamlit as st
 
+from src.data_loader import DataLoader
 from src.embeddings import EmbeddingManager
 from src.vector_store import VectorStoreManager
 from src.llm import LLMManager
@@ -7,11 +10,20 @@ from src.llm import LLMManager
 
 @st.cache_resource
 def load_pipeline():
+    project_dir = Path(__file__).resolve().parent
+    index_dir = project_dir / "faiss_index"
+    index_files = (index_dir / "index.faiss", index_dir / "index.pkl")
 
     embedding_model = EmbeddingManager()
 
     vector_store = VectorStoreManager(embedding_model)
-    vector_store.load("faiss_index")
+    if all(path.is_file() for path in index_files):
+        vector_store.load(index_dir)
+    else:
+        dataset_path = project_dir / "data" / "13k-recipes.csv"
+        documents = DataLoader(str(dataset_path)).load_documents()
+        vector_store.create_vector_store(documents)
+        vector_store.save(index_dir)
 
     retriever = vector_store.as_retriever(k=3)
 

@@ -200,12 +200,19 @@ The model setting is optional; it defaults to `openai/gpt-4o-mini`. `.env` is ig
 
 # ▶️ Run the Application
 
-Generate the FAISS index if it does not already exist.
+If the FAISS index is missing, the app builds it from `data/13k-recipes.csv` on first startup. This can take several minutes; the generated index is cached on the current server and is not committed to Git.
 
 Then launch the Streamlit app:
 
 ```bash
 streamlit run app.py
+```
+
+For Streamlit Community Cloud, add `OPENROUTER_API_KEY` (and optionally `OPENROUTER_MODEL`) in the app's **Settings → Secrets** using TOML format:
+
+```toml
+OPENROUTER_API_KEY = "your-openrouter-api-key"
+OPENROUTER_MODEL = "openai/gpt-4o-mini"
 ```
 
 ---

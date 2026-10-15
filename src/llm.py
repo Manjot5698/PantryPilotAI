@@ -1,11 +1,13 @@
 import os
 
+import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
+from streamlit.errors import StreamlitSecretNotFoundError
 
 
 class LLMManager:
@@ -16,14 +18,25 @@ class LLMManager:
     def __init__(self):
         load_dotenv()
 
-        api_key = os.getenv("OPENROUTER_API_KEY")
+        try:
+            secrets = st.secrets
+        except StreamlitSecretNotFoundError:
+            secrets = {}
+
+        api_key = os.getenv("OPENROUTER_API_KEY") or secrets.get("OPENROUTER_API_KEY")
         if not api_key:
             raise ValueError(
-                "OPENROUTER_API_KEY is missing. Add it to your .env file."
+                "OPENROUTER_API_KEY is missing. Set it in .env or Streamlit secrets."
             )
 
+        model = (
+            os.getenv("OPENROUTER_MODEL")
+            or secrets.get("OPENROUTER_MODEL")
+            or "openai/gpt-4o-mini"
+        )
+
         self.llm = ChatOpenAI(
-            model=os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
+            model=model,
             base_url="https://openrouter.ai/api/v1",
             api_key=SecretStr(api_key),
             temperature=0,
