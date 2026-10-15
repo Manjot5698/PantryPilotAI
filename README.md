@@ -11,7 +11,7 @@ The application combines **semantic search**, **FAISS vector search**, and an **
 ## ✨ Features
 
 - 🥘 AI-powered recipe recommendations
-- 📅 Expiry-aware ingredient prioritization
+- 📅 Calendar-based expiry tracking and prioritization
 - 🔍 Semantic recipe retrieval using FAISS
 - 🤖 LLM inference via OpenRouter
 - 📚 Knowledge base containing 13,000+ recipes
@@ -219,23 +219,7 @@ OPENROUTER_MODEL = "openai/gpt-4o-mini"
 
 # 💡 Example Input
 
-### Ingredients
-
-```text
-milk
-tomatoes
-chicken
-rice
-```
-
-### Expiry Days
-
-```text
-milk : 1
-tomatoes : 2
-chicken : 5
-rice : 30
-```
+Add one ingredient per row in the pantry table and choose its calendar expiry date. Optionally enter preferences such as `quick dinner` or `vegetarian`; PantryPilot calculates days remaining and uses that information to prioritize ingredients nearing expiry.
 
 ---
 

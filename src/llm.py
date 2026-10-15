@@ -99,7 +99,16 @@ Instructions:
 
         context = "\n\n".join(context_parts)
 
-        expiry_text = "\n".join(f"- {ingredient}: {days} day(s) left" for ingredient, days in expiry_info.items())
+        expiry_text = "\n".join(
+            (
+                f"- {ingredient}: expiry date passed {abs(days)} day(s) ago"
+                if days < 0
+                else f"- {ingredient}: expires today"
+                if days == 0
+                else f"- {ingredient}: expires in {days} day(s)"
+            )
+            for ingredient, days in expiry_info.items()
+        )
 
         print("=" * 60)
         print(f"Context Length: {len(context)}")
