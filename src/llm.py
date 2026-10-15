@@ -1,19 +1,33 @@
-from langchain_ollama import ChatOllama
+import os
+
+from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from pydantic import SecretStr
 
 
 class LLMManager:
     """
-    Handles response generation using a local Llama model.
+    Handles response generation using OpenRouter.
     """
 
     def __init__(self):
+        load_dotenv()
 
-        self.llm = ChatOllama(
-            model="llama3:latest",
-            temperature=0,)
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "OPENROUTER_API_KEY is missing. Add it to your .env file."
+            )
+
+        self.llm = ChatOpenAI(
+            model=os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
+            base_url="https://openrouter.ai/api/v1",
+            api_key=SecretStr(api_key),
+            temperature=0,
+        )
 
         self.prompt = ChatPromptTemplate.from_template(
             """

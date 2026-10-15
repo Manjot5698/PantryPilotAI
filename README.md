@@ -4,7 +4,7 @@
 
 PantryPilot AI is an AI-powered recipe recommendation system that uses **Retrieval-Augmented Generation (RAG)** to suggest recipes based on the ingredients available in a user's pantry. It also considers ingredient expiry dates to prioritize recipes that help reduce food waste.
 
-The application combines **semantic search**, **FAISS vector search**, and a **locally hosted Llama 3 model via Ollama** to generate contextual and explainable recipe recommendations.
+The application combines **semantic search**, **FAISS vector search**, and an **OpenRouter-hosted language model** to generate contextual and explainable recipe recommendations.
 
 ---
 
@@ -13,10 +13,10 @@ The application combines **semantic search**, **FAISS vector search**, and a **l
 - 🥘 AI-powered recipe recommendations
 - 📅 Expiry-aware ingredient prioritization
 - 🔍 Semantic recipe retrieval using FAISS
-- 🤖 Local LLM inference with Llama 3 (Ollama)
+- 🤖 LLM inference via OpenRouter
 - 📚 Knowledge base containing 13,000+ recipes
 - 💻 Interactive Streamlit interface
-- 🔒 Fully local execution (No API keys required)
+- 🔑 OpenRouter API key for language-model responses
 
 ---
 
@@ -41,7 +41,7 @@ subgraph Retrieval
 end
 
 subgraph LLM
-    G[Llama 3]
+    G[OpenRouter]
 end
 
 subgraph Output
@@ -91,7 +91,7 @@ sequenceDiagram
 actor User
 participant UI as Streamlit
 participant Retriever as FAISS
-participant LLM as Llama3
+participant LLM as OpenRouter
 
 User->>UI: Enter ingredients
 User->>UI: Enter expiry dates
@@ -141,7 +141,7 @@ PantryPilotAI/
 | UI | Streamlit |
 | Vector Store | FAISS |
 | Embedding Model | Sentence Transformers |
-| LLM | Llama 3 (Ollama) |
+| LLM | OpenRouter |
 | Dataset | 13K Recipes |
 
 ---
@@ -183,17 +183,18 @@ uv pip install -r requirements.txt
 
 ---
 
-# 🤖 Install Ollama
+# 🔑 Configure OpenRouter
 
-Install Ollama from:
+Create an API key at [OpenRouter](https://openrouter.ai/keys), copy `.env.example` to `.env`, and add your key:
 
-https://ollama.com
-
-Pull the required model:
-
-```bash
-ollama pull llama3
+```env
+OPENROUTER_API_KEY=your-openrouter-api-key
+OPENROUTER_MODEL=openai/gpt-4o-mini
 ```
+
+On Windows, copy the template with `Copy-Item .env.example .env`. On macOS/Linux, use `cp .env.example .env`.
+
+The model setting is optional; it defaults to `openai/gpt-4o-mini`. `.env` is ignored by Git, so keep your API key out of committed files.
 
 ---
 
